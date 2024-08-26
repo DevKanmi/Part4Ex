@@ -26,19 +26,17 @@ const Blogs = [
 ];
 
 beforeEach(async () => {
-  Blog.deleteMany({});
-  let blogObject = new Note(Blogs[0])
+  await Blog.deleteMany({});
+  let blogObject = new Blog(Blogs[0])
   await blogObject.save()
-  let blogObject = new Note(Blogs[1])
+  blogObject = new Blog(Blogs[1])
   await blogObject.save()
 });
 
 describe('HTTP GET requests', async()=>{
-    test('HTTP GET request to blog url', async()=>{
-        let result = await api
-                        .get('api/blogs')
-                        .expect(200)
-                        .expect('Content-type:', /application\/json/)
+    test('HTTP GET request to blog url retuns req length', async()=>{
+        const response = await api.get('/api/blogs')
+        assert.strictEqual(response.body.length, Blogs.length)
     })
 })
 
