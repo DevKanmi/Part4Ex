@@ -1,4 +1,5 @@
 const express = require('express')
+require('express-async-errors')// NO need to use try-except blocks this takes care of error-handlings
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
