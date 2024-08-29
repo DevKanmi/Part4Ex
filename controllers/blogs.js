@@ -1,5 +1,5 @@
 const blogRouter = require('express').Router()
-const { request } = require('../app')
+const { request, response } = require('../app')
 const Blog = require('../models/blog')
 const logger = require('../utils/logger')
 
@@ -36,6 +36,11 @@ blogRouter.put('/:id', async(request,response)=>{
    }
     const updatedBlogPost = await Blog.findByIdAndUpdate(request.params.id,blog,{new:true})
     response. json(updatedBlogPost)
+})
+
+blogRouter.get('/:id', async(request,response)=>{
+    const reqBlog = await Blog.findById(request.params.id)
+    response.json(reqBlog)
 })
 
 
