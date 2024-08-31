@@ -3,10 +3,11 @@ const User = require('../models/signUpSchema')
 const signUpRouter = require('express').Router()
 
 const createSignUp =  async(request,response) =>{
-    const {username, name, password} = request.body
+    try{
+    const {username, name, password} = request.body  //Destructuring from the body of request
 
     const saltRounds = 10
-    const passwordHash = await bcrypt.hash(password,saltRounds)
+    const passwordHash = await bcrypt.hash(password,saltRounds) //Hashing of passwords
 
     const user = new User({
         username,
@@ -16,10 +17,17 @@ const createSignUp =  async(request,response) =>{
 
     const savedUser = await user.save()
     response.status(201).json(savedUser)
+} 
+    catch(error) {  //Returns error if validation fails
+        if(error.name === 'ValidationError'){
+            response.status(400).json({error:'Min length required'})
+        }
+    }
 }
 
+//Return all Users in the database
 const getSavedUsers = async(request, response)=>{
-    const users = await User.find({})
+    const users = await User.find({})  
     response.status(200).json(users)
 }
 
