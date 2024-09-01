@@ -2,6 +2,8 @@ const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
 const logger = require('../utils/logger')
 const User = require('../models/signUpSchema')
+const jwt = require('jsonwebtoken')
+const { gettokenfrom } = require('../utils/middleware')
 
 
 blogRouter.get('/', async(request, response)=>{
@@ -9,12 +11,18 @@ blogRouter.get('/', async(request, response)=>{
     response.json(blogs)
 } )
 
+
+
 blogRouter.post('/', async (request, response) =>{
     const body = request.body
     console.log(body.userId)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token invalid' })
+      }
+      const user = await User.findById(decodedToken.id)
     //Retrieve all Users from the db
-    const user = await User.findById(body.userId)
-
     const blog = new Blog({
         title : body.title,
         author : body.author,
@@ -43,7 +51,7 @@ blogRouter.put('/:id', async(request,response)=>{
         likes: body.likes
    }
     const updatedBlogPost = await Blog.findByIdAndUpdate(request.params.id,blog,{new:true})
-    response. json(updatedBlogPost)
+    response.json(updatedBlogPost)
 })
 
 blogRouter.get('/:id', async(request,response)=>{
