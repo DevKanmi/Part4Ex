@@ -27,7 +27,7 @@ const createSignUp =  async(request,response) =>{
 
 //Return all Users in the database
 const getSavedUsers = async(request, response)=>{
-    const users = await User.find({})  
+    const users = await User.find({}).populate('blogs')//Populate replaces blogs id with actual blogs
     response.status(200).json(users)
 }
 

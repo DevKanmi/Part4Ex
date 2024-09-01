@@ -1,22 +1,31 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
 const logger = require('../utils/logger')
+const User = require('../models/signUpSchema')
 
 
 blogRouter.get('/', async(request, response)=>{
-    const blogs = await Blog.find({})
+    const blogs = await Blog.find({}).populate('user', {username : 1, name : 1})
     response.json(blogs)
 } )
 
 blogRouter.post('/', async (request, response) =>{
     const body = request.body
+    console.log(body.userId)
+    //Retrieve all Users from the db
+    const user = await User.findById(body.userId)
+
     const blog = new Blog({
         title : body.title,
         author : body.author,
         url: body.url,
-        likes: body.likes
+        likes: body.likes,
+        user:user.id
+        
     })
     const savedBlogPost = await blog.save()
+    user.blogs = user.blogs.concat(savedBlogPost._id) // Stores the blog in the blog array we created in the User Schema
+    await user.save()
     response.status(201).json(savedBlogPost)    
 })
 
